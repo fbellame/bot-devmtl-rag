@@ -23,6 +23,14 @@ Pour installer les librairie Python requises:
 ./setup.sh
 ```
 
+Initialiser toutes les clés d'API pour OpenAI, Langsmith et Google search:
+```sh
+export OPENAI_API_KEY=
+export LANGCHAIN_API_KEY=
+export GOOGLE_API_KEY=
+export GOOGLE_CSE_ID=
+```
+
 Pour exécuter le chat Bot:
 ```sh
 ./start.sh
