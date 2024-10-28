@@ -1,0 +1,12 @@
+langchain
+langchain-openai
+openai
+streamlit
+streamlit-chat
+unstructured
+tiktoken
+faiss-cpu
+semantic-router
+grandalf
+flashrank
+langchain-google-community
