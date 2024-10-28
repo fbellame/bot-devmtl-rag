@@ -30,7 +30,7 @@ Pour exécuter le chat Bot:
 
 ![bot-kb](images/bot-kb.png)
 
-Une fois le serveur lancé, déposer par drag and drop le fichier [farid-RAG.txt](demo/farid-RAG.txt).
+Une fois le serveur lancé, déposer par drag and drop le fichier [farid-RAG.txt](data/farid-RAG.txt).
 
 Cela devrait générer le vector store vectorstore.pkl. Ce vector store contient la version embeddings du fichier déposé.
 
