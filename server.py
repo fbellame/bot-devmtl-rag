@@ -2,16 +2,15 @@ import streamlit as st
 from streamlit_chat import message
 import os
 from ingest_data import embed_doc
-import openai
+import io
 from route import dl
 from kownledge import get_chain
 from langchain_core.tools import Tool
 from langchain_google_community import GoogleSearchAPIWrapper
-from langchain_openai import ChatOpenAI
+from image import generate_images
+from PIL import Image
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-title = "Bot KB Demo (semantic router)"
+title = "Mon web BOT personnel:"
 st.set_page_config(page_title=title, page_icon=":shark:")
 st.header(title)
 
@@ -70,7 +69,7 @@ def submit_input():
         vectorstore = st.session_state["vectorstore"]
         chain = get_chain(vectorstore)
 
-        # Clear previous responses when a new question is asked
+        # Clear previous res192.168.1.223ponses when a new question is asked
         st.session_state["last_question"] = user_input
         st.session_state["last_answer"] = ""
         st.session_state["last_retrieved_docs"] = []
@@ -79,27 +78,28 @@ def submit_input():
         route = dl(user_input)
         print(route)
 
-        if route.name == 'joke':
-            # Use OpenAI gpt4-mini model to generate a joke
-            
-            llm = ChatOpenAI( 
-                model="gpt-4o",
-                temperature=1,
-                max_tokens=None,
-                timeout=None,
-                max_retries=2,
-            )
-            
-            messages = [
-                (
-                    "system",
-                    "Tu es un humouriste reconnu pour tes blagues tres drole en francais. Tu adores les jeux de mots. Trouves une blague correspondant au theme.",
-                ),
-                ("human", user_input),
-            ]
-            output = llm.invoke(messages)
+        if route.name == 'image':
 
-            st.session_state["last_answer"] = output.content
+            # Initialize Streamlit progress bar
+            progress_bar = st.progress(0)
+            # generate image from prompt
+            images, seed = generate_images(user_input, progress_bar)
+
+            st.session_state["last_answer"] = "L'image a été sauvegardé dans "
+
+            for node_id in images:
+                for image_data in images[node_id]:
+                    image = Image.open(io.BytesIO(image_data))
+                    filename = f"outputs/{node_id}-{seed}.png"
+                    image.save(filename)
+                    print(f"Image saved as {filename}")
+
+                    # Display the image in Streamlit
+                    caption = f"Génération d'image avec le prompt: '{user_input}'"
+                    st.image(image, caption= caption)
+                    st.session_state["last_answer"] = caption
+
+
         elif route.name is not None:
             print(route.name)
             # Get answer from the LLM

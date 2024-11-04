@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "/home/farid/.conda/envs/semantic-router/bin/streamlit",
             "console": "integratedTerminal",
-            "args": ["run", "server.py"]
+            "args": ["run", "server.py"],
+            "justMyCode": false,
         },
         {
             "name": "Python: Streamlit MacOS",
@@ -18,7 +19,8 @@
             "request": "launch",
             "program": "/Users/faridbellameche/miniconda3/envs/semantic-route/bin/streamlit",
             "console": "integratedTerminal",
-            "args": ["run", "server.py"]
+            "args": ["run", "server.py"],
+            "justMyCode": false,
         },        
     ]
 }

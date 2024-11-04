@@ -10,3 +10,7 @@ semantic-router
 grandalf
 flashrank
 langchain-google-community
+vllm
+websocket-client
+pillow
+python-multipart

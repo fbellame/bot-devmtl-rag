@@ -2,6 +2,10 @@ from semantic_router import Route
 from semantic_router.encoders import OpenAIEncoder
 from semantic_router.layer import RouteLayer
 
+from dotenv import *
+
+load_dotenv(override=True)
+
 # Route for Confoo conversation
 conference = Route(
     name="/dev/mtl",
@@ -10,27 +14,21 @@ conference = Route(
         "/dev/mtl",
         "/dev/mtl2024",
         "conf",
-        "conference"
+        "conference",
+        "champignon"
     ]
 )
 
-# Route for Farid
-farid = Route(name="farid", utterances=[
-    "Farid Bellameche",
+# Route for Image
+image = Route(name="image", utterances=[
+    "image",
+    "génère",
     "Farid"
-    ]
-)
-
-# Route for Joke
-joke = Route(name="joke", utterances=[
-    "Joke",
-    "Blague",
-    "Amusement"
     ]
 )
 
 encoder = OpenAIEncoder()
 
-routes=[conference, farid, joke]
+routes=[conference, image]
 
 dl = RouteLayer(encoder=encoder, routes=routes)
