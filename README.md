@@ -1,12 +1,17 @@
-### Chat Bot avec une base de connaissances (KB)
+# Chat Bot avec une base de connaissances (KB)
 
+## Introduction
+
+Chat Bot personnel avec plusieurs outils:
+- Google search
+- Image server
+- RAG
+
+![bot-kb](images/bot-kb.png)
+
+## Architecture
 
 ![architecture-kb](images/archi.png)
-
-<br>
-Chat Bot avec un KB local pour Confoo
-
-L'objectif de ce bot est de permettre de répondre aux questions d'un utilisateur sur une base de connaissances qui est privée.
 
 
 Utilisation de [LangChain](https://langchain.readthedocs.io/en/latest/index.html) pour fabriquer une base de données de connaissances en locale avec le contenu du fichier [devmtl-RAG.txt](data/devmtl-RAG.txt).
@@ -15,17 +20,34 @@ Utilisation de [OpenAI](https://platform.openai.com/docs/introduction) pour le [
 
 Gestion des routes sémantiques avec [semantic-router](https://github.com/aurelio-labs/semantic-router)
 
+Utilisation d'un [Rerank](https://python.langchain.com/docs/integrations/retrievers/flashrank-reranker/) de résultats pour améliorer la pertinance des extraits de la base Vectorielle.
+
 Utilisation de [SreamLit](https://docs.streamlit.io/) pour gérer le server et l'interface Web du Bot.
 
-Pour générer des images, il est necessaire d'avoir un serveur ComfyUI dont l'URL est configuré dans le fichier [.env](.env)
+## Le serveur d'image ComfyUI
+
+Pour générer des images, voici le lien pour configurer [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
+
+Attention, le fichier [workflow.json](workflow.json) qui correspond à l'export d'un workflow API fonctionnel sur votre serveur ComfyUI 
+doit être générer à partir de votre configuration, voir [Comment comment le faire ici](https://9elements.com/blog/hosting-a-comfyui-workflow-via-api/)
+
+Il est necessaire d'avoir un serveur ComfyUI dont l'URL est configuré dans le fichier [.env](.env)
 ```sh
 COMFYUI_SERVER_ADDRESS=
 ```
 
-Voic le lien pour [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
+## La configuration de l'outil GoogleSearch
 
 Pour utiliser le tool GoogleSearch dans langchain, il faut configurer [Google Search](https://python.langchain.com/docs/integrations/tools/google_search/)
 
+
+Pour utiliser GoogleSearch, il est necessaire d'avoir ceci configuré dans le fichier [.env](.env)
+```sh
+GOOGLE_API_KEY=
+GOOGLE_CSE_ID=
+```
+
+## La configuration de Python
 
 Pour installer les librairie Python requises:
 
@@ -33,7 +55,29 @@ Pour installer les librairie Python requises:
 ./setup.sh
 ```
 
-Initialiser toutes les clés d'API pour OpenAI, Langsmith et Google search, etc dans un fichier .env (à créer)
+## La configuration de Langsmith
+
+Tous les appels à langchain sont loggés sur Langsmith.
+Vous devez vous inscrire et générer un token en suivant [cette procedure](https://www.langchain.com/langsmith)
+
+```sh
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
+LANGCHAIN_API_KEY="TOKEN"
+LANGCHAIN_PROJECT="your-project"
+```
+
+## La configuration du LLM
+
+J'utilise [OpenAI](https://platform.openai.com/docs/overview) [gpt-4o-mini](https://openai.com/index/gpt-4o-mini-advancing-cost-efficient-intelligence/) comme LLM, vous devez avoir un compte chez OpenAI et configurer [le token d'API](https://platform.openai.com/docs/api-reference/authentication):
+
+```sh
+OPENAI_API_KEY=
+```
+
+## La configuration complète
+
+Configuration complète du fichier .env (à créer)
 ```sh
 COMFYUI_SERVER_ADDRESS=
 OPENAI_API_KEY=
@@ -49,8 +93,5 @@ Pour exécuter le chat Bot:
 ```sh
 ./start.sh
 ```
-
-Mon chat BOT personnel:
-![bot-kb](images/bot-kb.png)
 
 Vous pouvez maintenant poser votre question...
