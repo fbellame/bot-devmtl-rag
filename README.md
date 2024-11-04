@@ -22,6 +22,10 @@ Pour générer des images, il est necessaire d'avoir un serveur ComfyUI dont l'U
 COMFYUI_SERVER_ADDRESS=
 ```
 
+Voic le lien pour [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
+
+Pour utiliser le tool GoogleSearch dans langchain, il faut configurer [Google Search](https://python.langchain.com/docs/integrations/tools/google_search/)
+
 
 Pour installer les librairie Python requises:
 
