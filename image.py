@@ -45,7 +45,7 @@ def get_images(ws, prompt, progress_bar):
 
     last_reported_percentage = 0
     
-    print("Step 6: Start listening for progress updates via the WebSocket connection.")
+    print("Start listening for progress updates via the WebSocket connection.")
 
     while True:
         out = ws.recv()
