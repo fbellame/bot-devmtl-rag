@@ -23,7 +23,7 @@ conference = Route(
 image = Route(name="image", utterances=[
     "image",
     "génère",
-    "Farid"
+    "genere"
     ]
 )
 

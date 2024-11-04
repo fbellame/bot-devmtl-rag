@@ -4,8 +4,6 @@ import json
 import urllib.request
 import urllib.parse
 import random
-from PIL import Image
-import io
 from dotenv import load_dotenv
 import os
 
@@ -20,7 +18,7 @@ client_id = str(uuid.uuid4())
 def queue_prompt(prompt):
     p = {"prompt": prompt, "client_id": client_id}
     data = json.dumps(p, indent=4).encode('utf-8')  # Prettify JSON for print
-    req = urllib.request.Request(f"http://{server_address}/prompt", data=data)
+    req = urllib.request.Request(f"https://{server_address}/prompt", data=data)
         
     return json.loads(urllib.request.urlopen(req).read())
 
@@ -31,13 +29,13 @@ def get_image(filename, subfolder, folder_type):
     
     print(f"Fetching image from the server: {server_address}/view")
     print(f"Filename: {filename}, Subfolder: {subfolder}, Type: {folder_type}")
-    with urllib.request.urlopen(f"http://{server_address}/view?{url_values}") as response:
+    with urllib.request.urlopen(f"https://{server_address}/view?{url_values}") as response:
         return response.read()
 
 # Get history for a prompt ID
 def get_history(prompt_id):
     print(f"Fetching history for prompt ID: {prompt_id}.")
-    with urllib.request.urlopen(f"http://{server_address}/history/{prompt_id}") as response:
+    with urllib.request.urlopen(f"https://{server_address}/history/{prompt_id}") as response:
         return json.loads(response.read())
 
 # Get images from the workflow
@@ -94,7 +92,7 @@ def get_images(ws, prompt, progress_bar):
 def generate_images(positive_prompt, progress_bar, steps=25, resolution=(1024, 1024)):
     # Establish WebSocket connection
     ws = websocket.WebSocket()
-    ws_url = f"ws://{server_address}/ws?clientId={client_id}"
+    ws_url = f"wss://{server_address}/ws?clientId={client_id}"
     print(f"Establishing WebSocket connection to {ws_url}")
     ws.connect(ws_url)
     
