@@ -6,6 +6,8 @@ from langchain.schema import Document
 from typing import List, Dict, Any
 from langchain_community.document_compressors.flashrank_rerank import FlashrankRerank
 
+compressor = FlashrankRerank(top_n=3)
+
 # FUNCTION TO INITIALIZE AND RETURN AN INSTANCE OF THE CHAIN
 def get_chain(vectorstore: VectorStore):
     retriever = vectorstore.as_retriever()
@@ -28,7 +30,6 @@ class RetrievalWithCitationsChain(Chain):
         question = inputs["question"]
         
         # RETRIEVE RELEVANT DOCUMENTS USING THE RETRIEVER
-        compressor = FlashrankRerank(top_n=3)
         retrieved_docs: List[Document] = self.retriever.invoke(question)
         compressed_docs = compressor.compress_documents(retrieved_docs, question)
         # Build context

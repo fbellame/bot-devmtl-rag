@@ -89,7 +89,7 @@ def get_images(ws, prompt, progress_bar):
     return output_images
 
 # Generate images function with customizable input
-def generate_images(positive_prompt, progress_bar, steps=25, resolution=(1024, 1024)):
+def generate_images(positive_prompt, progress_bar, steps=25, resolution=(512, 512)):
     # Establish WebSocket connection
     ws = websocket.WebSocket()
     ws_url = f"wss://{server_address}/ws?clientId={client_id}"
