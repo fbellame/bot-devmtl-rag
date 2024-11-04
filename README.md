@@ -46,6 +46,7 @@ Pour exécuter le chat Bot:
 ./start.sh
 ```
 
+Mon chat BOT personnel:
 ![bot-kb](images/bot-kb.png)
 
 Vous pouvez maintenant poser votre question...
