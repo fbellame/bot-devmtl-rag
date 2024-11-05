@@ -11,7 +11,7 @@ compressor = FlashrankRerank(top_n=3)
 # FUNCTION TO INITIALIZE AND RETURN AN INSTANCE OF THE CHAIN
 def get_chain(vectorstore: VectorStore):
     retriever = vectorstore.as_retriever()
-    template = """Réponds à la question de manière succinte en utilisant le contexte suivant:
+    template = """Réponds à la question de manière succinte en utilisant le contexte suivant, si la question est en anglais répond en anglais:
 {context}
 
 Question: {question}
