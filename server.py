@@ -20,9 +20,11 @@ if "vectorstore" not in st.session_state:
         vectorstore = embed_doc("data")
         st.session_state["vectorstore"] = vectorstore
         search = GoogleSearchAPIWrapper()
+        st.session_state["google_search"] = search
         
         def top_result(query):
-            result = search.results(query=query, num_results=1)
+            google_search = st.session_state["google_search"]
+            result = google_search.results(query=query, num_results=1)
             if result:
                 top_result = result[0]
                 return {
@@ -61,12 +63,41 @@ def get_text():
     input_text = placeholder.text_input("You: ", "", key="input", on_change=submit_input)
     return input_text
 
-# Function to submit input
+# Function to handle search
+def search(user_input):
+    search_tool = st.session_state["search_tool"]
+    output = search_tool.run(user_input)
+    if output:
+        formatted_output = f"**{output['title']}**\n\n{output['snippet']}\n\n[Learn more]({output['link']})"
+        return formatted_output
+    else:
+        return "No relevant search results found."
+
+# Function to generate images
+def generate_image(user_input, image_size):
+    progress_bar = st.progress(0)
+    images, seed = generate_images(user_input, resolution=image_size, progress_bar=progress_bar)
+    saved_images = []
+    for node_id, image_data_list in images.items():
+        for image_data in image_data_list:
+            image = Image.open(io.BytesIO(image_data))
+            filename = f"outputs/{node_id}-{seed}.png"
+            image.save(filename)
+            st.image(image, caption=f"Generated image with prompt: '{user_input}'")
+            saved_images.append(filename)
+    return f"Generated images saved: {', '.join(saved_images)}"
+
+# Function to call RAG (Retrieval-Augmented Generation)
+def call_RAG(user_input):
+    vectorstore = st.session_state["vectorstore"]
+    chain = get_chain(vectorstore)
+    output = chain.invoke(user_input)
+    return output["answer"], output["retrieved_docs"]
+
+# Main function to submit input
 def submit_input():
     user_input = st.session_state["input"]
     if user_input and st.session_state["vectorstore"]:
-        vectorstore = st.session_state["vectorstore"]
-        chain = get_chain(vectorstore)
         st.session_state["last_question"] = user_input
         st.session_state["last_answer"] = ""
         st.session_state["last_retrieved_docs"] = []
@@ -74,28 +105,14 @@ def submit_input():
         # Route the question
         route = dl(user_input)
         if route.name == 'image':
-            progress_bar = st.progress(0)
-            images, seed = generate_images(user_input, resolution=image_size, progress_bar=progress_bar)
-            st.session_state["last_answer"] = "L'image a été sauvegardée dans "
-            for node_id in images:
-                for image_data in images[node_id]:
-                    image = Image.open(io.BytesIO(image_data))
-                    filename = f"outputs/{node_id}-{seed}.png"
-                    image.save(filename)
-                    st.image(image, caption=f"Génération d'image avec le prompt: '{user_input}'")
-                    st.session_state["last_answer"] = f"Génération de l'image {filename}"
+            st.session_state["last_answer"] = generate_image(user_input, image_size)
         elif route.name is not None:
-            output = chain.invoke(user_input)
-            st.session_state["last_answer"] = output["answer"]
-            st.session_state["last_retrieved_docs"] = output["retrieved_docs"]
+            answer, retrieved_docs = call_RAG(user_input)
+            st.session_state["last_answer"] = answer
+            st.session_state["last_retrieved_docs"] = retrieved_docs
         else:
-            search_tool = st.session_state["search_tool"]
-            output = search_tool.run(user_input)
-            if output:
-                formatted_output = f"**{output['title']}**\n\n{output['snippet']}\n\n[Learn more]({output['link']})"
-                st.session_state["last_answer"] = formatted_output
-            else:
-                st.session_state["last_answer"] = "No relevant search results found."
+            st.session_state["last_answer"] = search(user_input)
+
         st.session_state["input"] = ""
 
 # Get user input
