@@ -19,7 +19,7 @@
             "request": "launch",
             "program": "/Users/faridbellameche/miniconda3/envs/semantic-route/bin/streamlit",
             "console": "integratedTerminal",
-            "args": ["run", "server.py"],
+            "args": ["run", "${file}"],
             "justMyCode": false,
         },        
     ]

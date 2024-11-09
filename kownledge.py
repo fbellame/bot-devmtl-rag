@@ -6,11 +6,9 @@ from langchain.schema import Document
 from typing import List, Dict, Any
 from langchain_community.document_compressors.flashrank_rerank import FlashrankRerank
 
-compressor = FlashrankRerank(top_n=3)
-
 # FUNCTION TO INITIALIZE AND RETURN AN INSTANCE OF THE CHAIN
 def get_chain(vectorstore: VectorStore):
-    retriever = vectorstore.as_retriever()
+    retriever = vectorstore.as_retriever(score_threshold = .7)
     template = """Réponds à la question de manière succinte en utilisant le contexte suivant, si la question est en anglais répond en anglais:
 {context}
 
@@ -18,24 +16,31 @@ Question: {question}
 Réponse (avec références):"""
     prompt = ChatPromptTemplate.from_template(template)
     model = ChatOpenAI(model_name="gpt-4o-mini")
-    chain = RetrievalWithCitationsChain(retriever=retriever, model=model, prompt=prompt)
+    
+    # Initialize compressor with top_n parameter
+    compressor = FlashrankRerank(top_n=3)
+    chain = RetrievalWithCitationsChain(retriever=retriever, model=model, prompt=prompt, compressor = compressor)
+    
     return chain
 
 class RetrievalWithCitationsChain(Chain):
     retriever: Any
     model: Any
     prompt: ChatPromptTemplate
+    compressor: FlashrankRerank
     
     def _call(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
         question = inputs["question"]
-        
+                
         # RETRIEVE RELEVANT DOCUMENTS USING THE RETRIEVER
         retrieved_docs: List[Document] = self.retriever.invoke(question)
-        compressed_docs = compressor.compress_documents(retrieved_docs, question)
+        compressed_docs = self.compressor.compress_documents(retrieved_docs, question)
+        
         # Build context
         context = "\n".join([doc.page_content for doc in compressed_docs])
+
         # Format prompt
-        prompt_input = self.prompt.format(context=context, question=question)
+        prompt_input = self.prompt.format(context=context.strip(), question=question)
         # Get model response
         response = self.model.invoke(prompt_input)
         answer = response.content if hasattr(response, 'content') else str(response)
